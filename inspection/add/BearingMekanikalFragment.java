@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.stepstone.stepper.VerificationError;
 
@@ -26,11 +27,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import id.sisi.si.mso.R;
 import id.sisi.si.mso.data.DataHelper;
+import id.sisi.si.mso.data.api.MsoService;
+import id.sisi.si.mso.data.api.ServiceGenerator;
 import id.sisi.si.mso.data.model.Bearing;
 import id.sisi.si.mso.data.model.EquipmentInfo;
+import id.sisi.si.mso.data.model.GetDefaultValue;
+import id.sisi.si.mso.data.model.GetDefaultValueResponse;
+import id.sisi.si.mso.data.model.GetPrevInspection;
 import id.sisi.si.mso.data.model.InspectionDetail;
 import id.sisi.si.mso.data.model.picItem;
 import id.sisi.si.mso.ui.abnormality.addOrEdit.AbnormalityAddOrEditActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Luhur on 1/10/2019.
@@ -38,7 +47,7 @@ import id.sisi.si.mso.ui.abnormality.addOrEdit.AbnormalityAddOrEditActivity;
 
 public class BearingMekanikalFragment extends TechnicalFragment {
     //added by rama 08 nov 2022 untuk prev data inspeksi
-//    private Call<GetPrevInspectionResponse> mPrevIns;
+    private Call<GetDefaultValueResponse> mdefval;
 //    @BindView(R.id.Kb_fan) TextView Kb_fan;
 //    @BindView(R.id.txtfLa) TextView txtfLa;
 //    @BindView(R.id.txtAmpSet) TextView txtAmpSet;
@@ -70,6 +79,25 @@ public class BearingMekanikalFragment extends TechnicalFragment {
     @BindView(R.id.UnsafeC)
     Spinner UnsafeC;
 
+    @BindView(R.id.txt_Kb_fan)
+    TextView txt_Kb_fan;
+    @BindView(R.id.txt_vib_fan)
+    TextView txt_vib_fan;
+    @BindView(R.id.txt_KV_fan)
+    TextView txt_KV_fan;
+    @BindView(R.id.txt_Temp_ds_imp)
+    TextView txt_Temp_ds_imp;
+    @BindView(R.id.txt_Temp_nds_imp)
+    TextView txt_Temp_nds_imp;
+    @BindView(R.id.txt_Pulley)
+    TextView txt_Pulley;
+    @BindView(R.id.txt_SafetyG)
+    TextView txt_SafetyG;
+    @BindView(R.id.txt_Houskeeping)
+    TextView txt_Houskeeping;
+    @BindView(R.id.txt_UnsafeC)
+    TextView txt_UnsafeC;
+
     @BindView(R.id.btn_Mkbf)
     Button btn_Mkbf;
     @BindView(R.id.btn_Mvf)
@@ -93,12 +121,17 @@ public class BearingMekanikalFragment extends TechnicalFragment {
     EditText keterangan;
     @BindView(R.id.spCondition)
     Spinner spCondition;
+    @BindView(R.id.txtCondition)
+    TextView txtCondition;
+    @BindView(R.id.add_abis)
+    Button add_abis;
 
     private int[] listbad = {0,0,0,0,0,0,0,0,0};
     private final String EQUIPMENTINFO_MODEL_KEY = "equipmentinfo_model_key";
     private Contract.ActivityCallback mActivityCallback;
     private double setting;
     private EquipmentInfo mEquipmentInfo;
+    private int created_abnormalities=0;
 
     public static BearingMekanikalFragment newInstance(EquipmentInfo equipmentInfo) {
         BearingMekanikalFragment instance = new BearingMekanikalFragment();
@@ -130,30 +163,21 @@ public class BearingMekanikalFragment extends TechnicalFragment {
         String subtipe = "5";
         String tipe = "1";
 //        Log.d("nomenclature",nomenclature);Log.d("subtipe",subtipe);Log.d("tipe",tipe);
-//        setprevinspection(nomenclature,tipe, subtipe);
+        setdefval(tipe, subtipe);
 //        end of added by rama
         return view;
     }
     private void setVIS(Button btn, int vis){
         btn.setVisibility(vis);
     }
-    private void setspinnerlistener(final Spinner v, final Button btn, final int index){
+    private void setspinnerlistener(final Spinner v, final int index){
         v.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 if(v.getSelectedItem().equals("BAD")){
-//                    Log.d("spinner","jalan");
                     listbad[index]=1;
-//                    mActivityCallback.onConditionChanged2(0, listbad);
-                    setVIS(btn,View.VISIBLE);
                 }else{
                     listbad[index]=0;
-                    int bad = 1;
-                    for (int i = 0; i < listbad.length; i++) {
-                        if(listbad[i]==1){bad = 0;}
-                    }
-                    setVIS(btn,View.INVISIBLE);
-//                    mActivityCallback.onConditionChanged2(bad, listbad);
                 }
             }
             @Override
@@ -162,7 +186,7 @@ public class BearingMekanikalFragment extends TechnicalFragment {
             }
         });
     }
-    private void setTemplistener(final EditText v, final Button btn, final int index){
+    private void setTemplistener(final EditText v, final int index){
         v.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "100")});
         v.addTextChangedListener(new TextWatcher() {
 
@@ -179,105 +203,68 @@ public class BearingMekanikalFragment extends TechnicalFragment {
                                       int before, int count) {
                 if(s.length()>0 && Double.parseDouble(s.toString())>70){
                     listbad[index]=1;
-//                    mActivityCallback.onConditionChanged2(1, listbad);
-                    setVIS(btn,View.VISIBLE);
                 }else{
                     listbad[index]=0;
-                    setVIS(btn,View.INVISIBLE);
-//                    mActivityCallback.onConditionChanged2(1, listbad);
                 }
             }
         });
     }
+    private void setSEnabled(boolean En){
+        Kb_fan.setEnabled(En);
+        Vib_fan.setEnabled(En);
+        KV_fan.setEnabled(En);
+        Pulley.setEnabled(En);
+        SafetyG.setEnabled(En);
+        Houskeeping.setEnabled(En);
+        UnsafeC.setEnabled(En);
+        Temp_ds_imp.setEnabled(En);
+        Temp_nds_imp.setEnabled(En);
+        keterangan.setEnabled(En);
+    }
     private void initView() {
+        setSEnabled(true);
+        created_abnormalities=0;
         spCondition.setAdapter(DataHelper.createAdapter(getActivity(), conditionOptions));
-//        spCondition.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                mActivityCallback.onConditionChanged(i);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//            }
-//        });
-
-//        btn_Mkbf; btn_Mvf; btn_Mkvf;btn_Mtbdi;btn_Mtbni;btn_Mpavb;btn_Msg;btn_Mhmaa;btn_Muc;
-//        Spinner Kb_fan;Spinner Vib_fan;Spinner KV_fan;EditText Temp_ds_imp;EditText Temp_nds_imp;Spinner Pulley;
-//        Spinner SafetyG;Spinner Houskeeping;Spinner UnsafeC;
-
-        setVIS(btn_Mkbf,View.INVISIBLE);
-        setVIS(btn_Mvf,View.INVISIBLE);
-        setVIS(btn_Mkvf,View.INVISIBLE);
-        setVIS(btn_Mtbdi,View.INVISIBLE);
-        setVIS(btn_Mtbni,View.INVISIBLE);
-        setVIS(btn_Mpavb,View.INVISIBLE);
-        setVIS(btn_Msg,View.INVISIBLE);
-        setVIS(btn_Mhmaa,View.INVISIBLE);
-        setVIS(btn_Muc,View.INVISIBLE);
-
-        setspinnerlistener(Kb_fan,btn_Mkbf,0);
-        setspinnerlistener(Vib_fan,btn_Mvf,1);
-        setspinnerlistener(KV_fan,btn_Mkvf,2);
-        setspinnerlistener(Pulley,btn_Mpavb,5);
-        setspinnerlistener(SafetyG,btn_Msg,6);
-        setspinnerlistener(Houskeeping,btn_Mhmaa,7);
-        setspinnerlistener(UnsafeC,btn_Muc,8);
-
-        setTemplistener(Temp_ds_imp,btn_Mtbdi,3);
-        setTemplistener(Temp_nds_imp,btn_Mtbni,4);
-
-        btn_Mkbf.setOnClickListener(new View.OnClickListener() {
+        spCondition.setVisibility(View.GONE);
+        txtCondition.setVisibility(View.GONE);
+        add_abis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), AddAbnormalMekanikal.class);
-                Intent intent = new Intent(getActivity(), AbnormalityAddOrEditActivity.class);
-                startActivity(intent);
-
+                setSEnabled(false);
+                int bad = 0;
+                for (int i = 0; i < listbad.length; i++) {
+                    if(listbad[i]>=1){bad = 1;}
+                }
+                if(created_abnormalities==0) {
+                    mActivityCallback.onConditionChanged2(bad, listbad);
+                    created_abnormalities+=1;
+                    add_abis.setText("added");
+                    add_abis.setEnabled(false);
+                }
             }
         });
 
-    }
+        setVIS(btn_Mkbf,View.GONE);
+        setVIS(btn_Mvf,View.GONE);
+        setVIS(btn_Mkvf,View.GONE);
+        setVIS(btn_Mtbdi,View.GONE);
+        setVIS(btn_Mtbni,View.GONE);
+        setVIS(btn_Mpavb,View.GONE);
+        setVIS(btn_Msg,View.GONE);
+        setVIS(btn_Mhmaa,View.GONE);
+        setVIS(btn_Muc,View.GONE);
 
-    private class bearingWatcher implements TextWatcher {
-        private EditText mEditText;
+        setspinnerlistener(Kb_fan,0);
+        setspinnerlistener(Vib_fan,1);
+        setspinnerlistener(KV_fan,2);
+        setspinnerlistener(Pulley,5);
+        setspinnerlistener(SafetyG,6);
+        setspinnerlistener(Houskeeping,7);
+        setspinnerlistener(UnsafeC,8);
 
-        public bearingWatcher(EditText e) {
-            mEditText = e;
-        }
+        setTemplistener(Temp_ds_imp,3);
+        setTemplistener(Temp_nds_imp,4);
 
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-//            if(!TextUtils.isNullOrEmpty(s.toString().trim())){
-//                Double value = Double.parseDouble(s.toString());
-//                if(!TextUtils.isNullOrEmpty(ampereSetting.getText().toString())) {
-//                    setting = Double.parseDouble(ampereSetting.getText().toString());
-//                    if (value >= setting)
-//                        mEditText.getBackground().setColorFilter(getResources().getColor(R.color.material_red_400), PorterDuff.Mode.SRC_ATOP);
-//                    else if (value < setting)
-//                        mEditText.getBackground().setColorFilter(getResources().getColor(R.color.material_green_400), PorterDuff.Mode.SRC_ATOP);
-//                }
-//                else
-//                    mEditText.getBackground().setColorFilter(getResources().getColor(R.color.ms_white_54_opacity), PorterDuff.Mode.SRC_ATOP);
-//                checkCondition(value, mEditText);
-//            }
-//            else
-//            {
-//                checkCondition(0.0, mEditText);
-//                mEditText.getBackground().setColorFilter(getResources().getColor(R.color.ms_white_54_opacity), PorterDuff.Mode.SRC_ATOP);
-//            }
-        }
     }
 
     @Override
@@ -304,7 +291,8 @@ public class BearingMekanikalFragment extends TechnicalFragment {
             bearing.setHouskeeping(Houskeeping.getSelectedItem().toString());
         if(!UnsafeC.getSelectedItem().toString().isEmpty())
             bearing.setUnsafeC(UnsafeC.getSelectedItem().toString());
-
+        if(!keterangan.getText().toString().isEmpty())
+            bearing.setKeteranganM(keterangan.getText().toString());
         return bearing;
     }
 
@@ -385,47 +373,50 @@ public class BearingMekanikalFragment extends TechnicalFragment {
             return b > a ? c >= a && c <= b : c >= b && c <= a;
         }
     }
-    public void setprevinspection(String nomenclature,String tipe, String subtipe){
-//        mPrevIns = ServiceGenerator.getInstance().getRetrofit().create(MsoService.class).getPrevInspection(nomenclature,tipe, subtipe);
-//        mPrevIns.enqueue(new Callback<GetPrevInspectionResponse>() {
-//            @Override
-//            public void onResponse(Call<GetPrevInspectionResponse> call, Response<GetPrevInspectionResponse> response) {
-//                if (response.isSuccessful()) {
-//                    if (response.body() != null && response.body().isSuccess()) {
-////                        AutonomosSupervisor.setValue(response.body().getData());
-////                        Log.d("GetPrevInspection2", response.body().getData().toString());
-//                        List<GetPrevInspection> data = response.body().getData();
-//                        String id, value;
-//                        for (int i=0;i<data.size();i++) {
-//                            id = data.get(i).getId();
-//                            value = " (prev : "+data.get(i).getValue()+")";
-//                            if(id.equals("49")) { txtKW.setText(txtKW.getText().toString() + value);
-//                            }else if(id.equals("50")){txtfLa.setText(txtfLa.getText().toString() + value);
-//                            }else if(id.equals("51")) {txtAmpSet.setText(txtAmpSet.getText().toString() + value);
-//                            }else if(id.equals("52")) {txtAmpR.setText(txtAmpR.getText().toString() + value);
-//                            }else if(id.equals("53")) {txtAmpS.setText(txtAmpS.getText().toString() + value);
-//                            }else if(id.equals("54")) {txtAmpT.setText(txtAmpT.getText().toString() + value);
-//                            }else if(id.equals("55")) {txtTempR.setText(txtTempR.getText().toString() + value);
-//                            }else if(id.equals("56")) {txtTempS.setText(txtTempS.getText().toString() + value);
-//                            }else if(id.equals("57")) {txtTempT.setText(txtTempT.getText().toString() + value);
-//                            }
-//                        }
-//                    }else if(!response.body().isSuccess()){
-//                        showToast("data sebelumnya tidak dapat diambil");
-//                        call.cancel();
-//                    }
-//                } else {
-//                    if (response.body() != null) {
-//                        Log.e("GetPrevInspection", "NULL" );
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<GetPrevInspectionResponse> call, Throwable t) {
-//                Log.d("GetPrevInspection ",t.toString());
-//            }
-//        });
+    public void setdefval(String tipe, String subtipe){
+        mdefval = ServiceGenerator.getInstance().getRetrofit().create(MsoService.class).GetDefaultValue(tipe, subtipe);
+        mdefval.enqueue(new Callback<GetDefaultValueResponse>() {
+            @Override
+            public void onResponse(Call<GetDefaultValueResponse> call, Response<GetDefaultValueResponse> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null && response.body().isSuccess()) {
+//                        AutonomosSupervisor.setValue(response.body().getData());
+//                        Log.d("GetPrevInspection2", response.body().getData().toString());
+                        List<GetDefaultValue> data = response.body().getData();
+                        String id, value;
+                        for (int i=0;i<data.size();i++) {
+                            id = data.get(i).getId();
+                            if(data.get(i).getValue()==null){
+                                value = " (N/A)";
+                            }else{
+                                value = " ("+data.get(i).getValue()+")";
+                            }
+                            if(id.equals("232")) { txt_Kb_fan.setText(txt_Kb_fan.getText().toString() + value);
+                            }else if(id.equals("233")){txt_vib_fan.setText(txt_vib_fan.getText().toString() + value);
+                            }else if(id.equals("234")) {txt_KV_fan.setText(txt_KV_fan.getText().toString() + value);
+                            }else if(id.equals("235")) {txt_Temp_ds_imp.setText(txt_Temp_ds_imp.getText().toString() + value);
+                            }else if(id.equals("236")) {txt_Temp_nds_imp.setText(txt_Temp_nds_imp.getText().toString() + value);
+                            }else if(id.equals("237")) {txt_Pulley.setText(txt_Pulley.getText().toString() + value);
+                            }else if(id.equals("238")) {txt_SafetyG.setText(txt_SafetyG.getText().toString() + value);
+                            }else if(id.equals("239")) {txt_Houskeeping.setText(txt_Houskeeping.getText().toString() + value);
+                            }else if(id.equals("240")) {txt_UnsafeC.setText(txt_UnsafeC.getText().toString() + value);
+                            }
+                        }
+                    }else if(!response.body().isSuccess()){
+                        showToast("data sebelumnya tidak dapat diambil");
+                    }
+                } else {
+                    if (response.body() != null) {
+                        Log.e("GetPrevInspection", "NULL" );
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetDefaultValueResponse> call, Throwable t) {
+                Log.d("GetPrevInspection ",t.toString());
+            }
+        });
     }
 //        end of added by rama
 }

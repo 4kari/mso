@@ -71,14 +71,7 @@ public class AddInspectionActivity extends BaseActivity
     private TechnicalFragment mTechnicalFragmentAfter;
     private TechnicalFragment mTechnicalFragmentServiceL, mTechnicalFragmentServiceM;
     private AbnormalityFragment mAbnormalityFragment;
-    private AbnormalityFragment mAbnormalityFragment2;
-    private AbnormalityFragment mAbnormalityFragment3;
-    private AbnormalityFragment mAbnormalityFragment4;
-    private AbnormalityFragment mAbnormalityFragment5;
-    private AbnormalityFragment mAbnormalityFragment6;
-    private AbnormalityFragment mAbnormalityFragment7;
-    private AbnormalityFragment mAbnormalityFragment8;
-    private AbnormalityFragment mAbnormalityFragment9;
+    private AbnormalityFragmentM mAbnormalityFragment2;
 
     TechnicalModel technicalModels = null;
 
@@ -126,10 +119,6 @@ public class AddInspectionActivity extends BaseActivity
 
         @Override
     public void initView(ArrayList<InspectionActivity> activities) {
-            listfragABS.addAll(Arrays.asList(mAbnormalityFragment,mAbnormalityFragment2,mAbnormalityFragment3,
-                    mAbnormalityFragment4,mAbnormalityFragment5,mAbnormalityFragment6,mAbnormalityFragment7,
-                    mAbnormalityFragment8,mAbnormalityFragment9));
-//        stepperLayout.setOffscreenPageLimit(4);
         stepperLayout.setOffscreenPageLimit(10);
 
         mAdapter = new AddInspectionAdapter(getSupportFragmentManager(), this);
@@ -250,7 +239,6 @@ public class AddInspectionActivity extends BaseActivity
     }
     @Override
     public void onConditionChanged2(int condition, int[] index) {
-        Log.d("onCondi","jalan");
         mPresenter.setEquipmentCondition2(condition,index);
     }
 
@@ -315,241 +303,40 @@ public class AddInspectionActivity extends BaseActivity
 
         mEquipmentCondition = AddInspectionPresenter.EQUIPMENT_CONDITION_BAD;
     }
-    @Override
-    public void setupAbnormalityStep2(AbnormalityParams abnormalityParams, int[] index) {
-////        if (mAbnormalityFragment == null)
-////            mAbnormalityFragment = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo);
-//
-////        menghapus tampilan abnormalitas yang sudah ada 29 dec 2022
-//
-//        int fid=0;
-//        while (mAdapter.getCount()>2){
-////            mAdapter.removeStep(listfragABS.get(fid));
-//            try{
-////                stepperLayout.removeViewAt(2);
-////                Log.d("delete: ",mAdapter.findStep(2).toString());
-//                mAdapter.removeStep(mAdapter.findStep(2));
-//                mAdapter.notifyDataSetChanged();
-//                stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-//            }catch (Exception e){
-//                Log.d("Exception",e.getMessage());
-//            }
-//
-//        }
-//            Log.d("adaptercount", String.valueOf(mAdapter.getCount()));
-////            for (int i=index.length-1;i>=0;i--){
-////    //            addlistfrag(abnormalityParams,listfragABS.get(i),i);
-////                if(index[i]==0){
-////                    Log.d("removeABS",String.valueOf(2+i));
-////                    Log.d("removed ",mAdapter.findStep(2+i).toString());
-////                    mAdapter.removeStep(mAdapter.findStep(2+i));
-////                    afterRstep();
-////                }
-////            }
-//
-////            try {
-////                Log.d("list_terhapus",listfragABS.get(i).toString());
-////                hapusAbsF(listfragABS.get(i));
-////            } catch (Exception e){
-////                Log.d("error hapus abs", e.toString());
-////            }
-//            try {
-////                Log.d("step",mAdapter.findStep(2).getClass().getName());
-////                mAdapter.removeStep(mAdapter.findStep(2));
-////                afterRstep();
-//
-////                if (i == 0) {
-////                    mAdapter.removeStep(mAbnormalityFragment);
-////                    afterRstep();
-////                } else if (i == 1) {
-////                    mAdapter.removeStep(mAbnormalityFragment2);
-////                    afterRstep();
-////                } else if (i == 2) {
-////                    mAdapter.removeStep(mAbnormalityFragment3);
-////                    afterRstep();
-////                } else if (i == 3) {
-////                    mAdapter.removeStep(mAbnormalityFragment4);
-////                    afterRstep();
-////                } else if (i == 4) {
-////                    mAdapter.removeStep(mAbnormalityFragment5);
-////                    afterRstep();
-////                } else if (i == 5) {
-////                    mAdapter.removeStep(mAbnormalityFragment6);
-////                    afterRstep();
-////                } else if (i == 6) {
-////                    mAdapter.removeStep(mAbnormalityFragment7);
-////                    afterRstep();
-////                } else if (i == 7) {
-////                    mAdapter.removeStep(mAbnormalityFragment8);
-////                    afterRstep();
-////                } else if (i == 8) {
-////                    mAdapter.removeStep(mAbnormalityFragment9);
-////                    afterRstep();
-////                }
-//            }catch (Exception e){
-//                Log.d("error hapus abs", e.toString());
-//            }
-////        for (int i = 0; i < index.length ; i++) {
-////            if(index[i]==1) {
-////                if (i == 0) {
-////
-////                    mAbnormalityFragment = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i);
-////                    mAdapter.addAdditionalStep(mAbnormalityFragment);
-////                    mAdapter.notifyDataSetChanged();
-////                    stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-////
-////                    if(mInspectionFragment.setDataToModel() != null) {
-////                        if(mInspectionFragment.setDataToModel().getPhotoPath() != null)
-////                            mAbnormalityFragment.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
-////
-////                        if(mInspectionFragment.setDataToModel().getLocalPhotoPath() != null)
-////                            mAbnormalityFragment.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
-////                    }
-////                }
-////                else if (i == 1) {
-////                    mAbnormalityFragment2 = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i);
-////                    mAdapter.addAdditionalStep(mAbnormalityFragment2);
-////                    mAdapter.notifyDataSetChanged();
-////                    stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-////
-////                    if(mInspectionFragment.setDataToModel() != null) {
-////                        if(mInspectionFragment.setDataToModel().getPhotoPath() != null)
-////                            mAbnormalityFragment2.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
-////
-////                        if(mInspectionFragment.setDataToModel().getLocalPhotoPath() != null)
-////                            mAbnormalityFragment2.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
-////                    }
-////                }
-////                else if (i == 2) {
-////                    mAbnormalityFragment3 = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i);
-////                    mAdapter.addAdditionalStep(mAbnormalityFragment3);
-////                    mAdapter.notifyDataSetChanged();
-////                    stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-////
-////                    if(mInspectionFragment.setDataToModel() != null) {
-////                        if(mInspectionFragment.setDataToModel().getPhotoPath() != null)
-////                            mAbnormalityFragment3.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
-////
-////                        if(mInspectionFragment.setDataToModel().getLocalPhotoPath() != null)
-////                            mAbnormalityFragment3.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
-////                    }
-////                }
-////                else if (i == 3) {
-////                    mAbnormalityFragment4 = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i);
-////                    mAdapter.addAdditionalStep(mAbnormalityFragment4);
-////                    mAdapter.notifyDataSetChanged();
-////                    stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-////
-////                    if(mInspectionFragment.setDataToModel() != null) {
-////                        if(mInspectionFragment.setDataToModel().getPhotoPath() != null)
-////                            mAbnormalityFragment4.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
-////
-////                        if(mInspectionFragment.setDataToModel().getLocalPhotoPath() != null)
-////                            mAbnormalityFragment4.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
-////                    }
-////                }
-////                else if (i == 4) {
-////                    mAbnormalityFragment5 = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i);
-////                    mAdapter.addAdditionalStep(mAbnormalityFragment5);
-////                    mAdapter.notifyDataSetChanged();
-////                    stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-////
-////                    if(mInspectionFragment.setDataToModel() != null) {
-////                        if(mInspectionFragment.setDataToModel().getPhotoPath() != null)
-////                            mAbnormalityFragment5.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
-////
-////                        if(mInspectionFragment.setDataToModel().getLocalPhotoPath() != null)
-////                            mAbnormalityFragment5.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
-////                    }
-////                }
-////                else if (i == 5) {
-////                    mAbnormalityFragment6 = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i);
-////                    mAdapter.addAdditionalStep(mAbnormalityFragment6);
-////                    mAdapter.notifyDataSetChanged();
-////                    stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-////
-////                    if(mInspectionFragment.setDataToModel() != null) {
-////                        if(mInspectionFragment.setDataToModel().getPhotoPath() != null)
-////                            mAbnormalityFragment6.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
-////
-////                        if(mInspectionFragment.setDataToModel().getLocalPhotoPath() != null)
-////                            mAbnormalityFragment6.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
-////                    }
-////                }
-////                else if (i == 6) {
-////                    mAbnormalityFragment7 = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i);
-////                    mAdapter.addAdditionalStep(mAbnormalityFragment7);
-////                    mAdapter.notifyDataSetChanged();
-////                    stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-////
-////                    if(mInspectionFragment.setDataToModel() != null) {
-////                        if(mInspectionFragment.setDataToModel().getPhotoPath() != null)
-////                            mAbnormalityFragment7.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
-////
-////                        if(mInspectionFragment.setDataToModel().getLocalPhotoPath() != null)
-////                            mAbnormalityFragment7.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
-////                    }
-////                }
-////                else if (i == 7) {
-////                    mAbnormalityFragment8 = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i);
-////                    mAdapter.addAdditionalStep(mAbnormalityFragment8);
-////                    mAdapter.notifyDataSetChanged();
-////                    stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-////
-////                    if(mInspectionFragment.setDataToModel() != null) {
-////                        if(mInspectionFragment.setDataToModel().getPhotoPath() != null)
-////                            mAbnormalityFragment8.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
-////
-////                        if(mInspectionFragment.setDataToModel().getLocalPhotoPath() != null)
-////                            mAbnormalityFragment8.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
-////                    }
-////                }
-////                else if (i == 8) {
-////                    mAbnormalityFragment9 = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i);
-////                    mAdapter.addAdditionalStep(mAbnormalityFragment9);
-////                    mAdapter.notifyDataSetChanged();
-////                    stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-////
-////                    if(mInspectionFragment.setDataToModel() != null) {
-////                        if(mInspectionFragment.setDataToModel().getPhotoPath() != null)
-////                            mAbnormalityFragment9.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
-////
-////                        if(mInspectionFragment.setDataToModel().getLocalPhotoPath() != null)
-////                            mAbnormalityFragment9.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
-////                    }
-////                }
-////            }
-////                if (mAdapter.getCount() < 11 && mBearingType == TYPE_MEKANIKAL){
-////                    listfragABS.set(i,AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i));
-////                    addAbnormalityFragment2(listfragABS.get(i));// perlu ganti
-//////                    listfragABS.add(mAbnormalityFragment);
-////                    Log.d("listfragABS", String.valueOf(listfragABS.size()));
-////                }
-////        }
-////        mEquipmentCondition = AddInspectionPresenter.EQUIPMENT_CONDITION_BAD;
-    }
-    private void afterRstep(){
-        mAdapter.notifyDataSetChanged();
-        stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
-    }
-    private void addlistfrag(AbnormalityParams abnormalityParams, AbnormalityFragment mABS, int i){
-        Log.d("created index", String.valueOf(i));
-        mABS = AbnormalityFragment.newInstance(abnormalityParams, mEquipmentInfo, i);
-        addAbnormalityFragment2(mABS);
-        listfragABS.set(i, mABS);
-    }
-    private void addAbnormalityFragment2(AbnormalityFragment mAbs) {
-        mAdapter.addAdditionalStep(mAbs);
+    public void addAbnormality2(AbnormalityParams abnormalityParams,int i){
+        mAbnormalityFragment2 = AbnormalityFragmentM.newInstance(abnormalityParams, mEquipmentInfo, i);
+        mAdapter.addAdditionalStep(mAbnormalityFragment2);
         mAdapter.notifyDataSetChanged();
         stepperLayout.setCurrentStepPosition(stepperLayout.getCurrentStepPosition());
 
         if(mInspectionFragment.setDataToModel() != null) {
             if(mInspectionFragment.setDataToModel().getPhotoPath() != null)
-                mAbs.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
+                mAbnormalityFragment2.setupAbnormalityImage(null, mInspectionFragment.setDataToModel().getPhotoPath());
 
             if(mInspectionFragment.setDataToModel().getLocalPhotoPath() != null)
-                mAbs.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
+                mAbnormalityFragment2.setupAbnormalityImage(mInspectionFragment.setDataToModel().getLocalPhotoPath(), null);
         }
+    }
+
+    @Override
+    public void addAbis(Abnormal data){
+//        data = mAbnormalityFragment.setDataToModel();
+        Log.d("addAbis: ","jalan");
+        mPresenter.insertabis(data);
+        checkAbis();//untuk cek data sekarang
+    }
+    public void checkAbis(){
+        mPresenter.checkAbis();
+    }
+    @Override
+    public void setupAbnormalityStep2(AbnormalityParams abnormalityParams, int[] index) {
+        Log.d( "setupAbnormalityStep2: ",Arrays.toString(index));
+        for (int i = 0; i < index.length; i++) {
+            if(index[i]==1){
+                addAbnormality2(abnormalityParams,i);
+            }
+        }
+        mAdapter.checkstep();
     }
     private void addAbnormalityFragment() {
         mAdapter.addAdditionalStep(mAbnormalityFragment);
@@ -596,6 +383,8 @@ public class AddInspectionActivity extends BaseActivity
         Timber.d("imageUrl" + imageUrl);
         if (mAbnormalityFragment != null)
             mAbnormalityFragment.setupAbnormalityImage(imagePath, imageUrl);
+        if (mAbnormalityFragment2 != null)
+            mAbnormalityFragment2.setupAbnormalityImage(imagePath, imageUrl);
     }
 
     @Override

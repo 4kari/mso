@@ -7,6 +7,7 @@ import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,19 @@ public class AddInspectionPresenter extends BasePresenter<Contract.AddInspection
     private AbnormalityParams mAbnormalityParamsModel;
     private int mEquipmentCondition = EQUIPMENT_CONDITION_GOOD;
     private int mTransactionMode = ONLINE_MODE;
+    private ArrayList<Abnormal> dataAbis = new ArrayList<Abnormal>();
+
+    public void insertabis(Abnormal abs){
+        dataAbis.add(abs);
+        Log.d("insertabis: ", String.valueOf(dataAbis.get(0).getPlant()));
+
+    }
+    public void checkAbis(){
+        Log.d("checkAbis ", Arrays.toString(dataAbis.toArray()));
+        Log.d("checkAbis2 ",dataAbis.toString());
+        Log.d("checkAbis3 ",""+dataAbis);
+        Log.d("checkAbis4 ", String.valueOf(dataAbis.size()));
+    }
 
     public AddInspectionPresenter(EquipmentInfo equipmentInfo, int transactionMode) {
         mRealm = Realm.getDefaultInstance();
@@ -236,7 +250,8 @@ public class AddInspectionPresenter extends BasePresenter<Contract.AddInspection
     @Override
     public void attemptSave(InspectionDetail inspectionDetail, @Nullable TechnicalModel technicalModel,
                             @Nullable Abnormal abnormal, @Nullable TechnicalModel technicalModel2,
-                            @Nullable TechnicalModel technicalModel3,@Nullable InspectionDetail condition, int bearingType) {
+                            @Nullable TechnicalModel technicalModel3,@Nullable InspectionDetail condition,
+                            int bearingType) {
         if (!NetworkUtil.isConnected()) {
             if (getView() != null)
                 getView().onOfflineSave();
@@ -484,27 +499,72 @@ public class AddInspectionPresenter extends BasePresenter<Contract.AddInspection
         }
 
         if (mEquipmentCondition == EQUIPMENT_CONDITION_BAD ) {
-            abnormal.setAbnormalDate(inspectionDetail.getDate());
-            abnormal.setReportedBy(new ReporterItem("", ""));
-            abnormal.setEquipmentId(mEquipmentInfo.getId());
-            abnormal.setNomenclature(mEquipmentInfo.getName());
-            abnormal.setMpi(mEquipmentInfo.getMpi());
-            abnormal.setPictBefore(inspectionDetail.getPhotoPath());
-            abnormal.setSynced(true);
 
-            params.put("abnormal_date", abnormal.getAbnormalDate());
-            params.put("abnormal_plant", abnormal.getPlant().getPlant());
-            params.put("abnormal_reported_by", abnormal.getReportedBy().getValue());
-            params.put("abnormal_equipment_id", String.valueOf(abnormal.getEquipmentId()));
-            params.put("abnormal_source", String.valueOf(abnormal.getSource().getValue()));
-            params.put("abnormal_priority", String.valueOf(abnormal.getPriority().getValue()));
-            params.put("abnormal_condition", String.valueOf(abnormal.getCondition().getValue()));
-            params.put("abnormal_action", String.valueOf(abnormal.getAction().getValue()));
-            params.put("abnormal_abnormal", abnormal.getAbnormal());
-            params.put("abnormal_activity", abnormal.getActivity());
-            params.put("abnormal_remark", abnormal.getRemark());
-            params.put("abnormal_pict_before", abnormal.getPictBefore());
-            params.put("abnormal_pict_after", abnormal.getPictAfter());
+            if(bearingType == AddInspectionActivity.TYPE_MEKANIKAL){
+                Log.d("attemptSave: ",inspectionDetail.toString());
+                Log.d("attemptSave2 ",inspectionDetail.getDate());
+                Log.d("attemptSave3: ",inspectionDetail.getPhotoPath());
+                dataAbis.get(0).setAbnormalDate(inspectionDetail.getDate());
+                dataAbis.get(0).setReportedBy(new ReporterItem("", ""));
+                dataAbis.get(0).setEquipmentId(mEquipmentInfo.getId());
+                dataAbis.get(0).setNomenclature(mEquipmentInfo.getName());
+                dataAbis.get(0).setMpi(mEquipmentInfo.getMpi());
+                dataAbis.get(0).setPictBefore(inspectionDetail.getPhotoPath());
+                dataAbis.get(0).setSynced(true);
+                ArrayList<String> AbisDate = new ArrayList<String>(dataAbis.size()), AbisPlant = new ArrayList<String>(dataAbis.size()), AbisReportBy = new ArrayList<String>(dataAbis.size()), AbisEquipment = new ArrayList<String>(dataAbis.size()), AbisSource = new ArrayList<String>(dataAbis.size()), AbisPriority = new ArrayList<String>(dataAbis.size());
+                ArrayList<String> AbisCondition = new ArrayList<String>(dataAbis.size()), AbisAction = new ArrayList<String>(dataAbis.size()), AbisAbnormal = new ArrayList<String>(dataAbis.size()), AbisActivity = new ArrayList<String>(dataAbis.size()), AbisRemark = new ArrayList<String>(dataAbis.size()), AbisPictBefore = new ArrayList<String>(dataAbis.size()), AbisPictAfter = new ArrayList<String>(dataAbis.size());
+                for (int i = 0; i < dataAbis.size(); i++) {
+                    AbisDate.add(dataAbis.get(0).getAbnormalDate());
+                    AbisPlant.add(dataAbis.get(i).getPlant().getPlant());
+                    AbisReportBy.add(dataAbis.get(0).getReportedBy().getValue());
+                    AbisEquipment.add(dataAbis.get(0).getEquipmentId());
+                    AbisSource.add(String.valueOf(dataAbis.get(i).getSource().getValue()));
+                    AbisPriority.add(String.valueOf(dataAbis.get(i).getPriority().getValue()));
+                    AbisCondition.add(String.valueOf(dataAbis.get(i).getCondition().getValue()));
+                    AbisAction.add(String.valueOf(dataAbis.get(i).getAction().getValue()));
+                    AbisAbnormal.add(dataAbis.get(i).getAbnormal());
+                    AbisActivity.add(dataAbis.get(i).getActivity());
+                    AbisRemark.add(dataAbis.get(i).getRemark());
+                    AbisPictBefore.add(dataAbis.get(0).getPictBefore());
+                    AbisPictAfter.add(dataAbis.get(i).getPictAfter());
+                }
+                params.put("array_mekanikal", Arrays.toString(index));
+                params.put("abnormal_date", Arrays.toString(AbisDate.toArray()));
+                params.put("abnormal_plant", Arrays.toString(AbisPlant.toArray()));
+                params.put("abnormal_reported_by", Arrays.toString(AbisReportBy.toArray()));
+                params.put("abnormal_equipment_id", Arrays.toString(AbisEquipment.toArray()));
+                params.put("abnormal_source", Arrays.toString(AbisSource.toArray()));
+                params.put("abnormal_priority", Arrays.toString(AbisPriority.toArray()));
+                params.put("abnormal_condition", Arrays.toString(AbisCondition.toArray()));
+                params.put("abnormal_action", Arrays.toString(AbisAction.toArray()));
+                params.put("abnormal_abnormal", Arrays.toString(AbisAbnormal.toArray()));
+                params.put("abnormal_activity", Arrays.toString(AbisActivity.toArray()));
+                params.put("abnormal_remark", Arrays.toString(AbisRemark.toArray()));
+                params.put("abnormal_pict_before", Arrays.toString(AbisPictBefore.toArray()));
+                params.put("abnormal_pict_after", Arrays.toString(AbisPictAfter.toArray()));
+            }else {
+                abnormal.setAbnormalDate(inspectionDetail.getDate());
+                abnormal.setReportedBy(new ReporterItem("", ""));
+                abnormal.setEquipmentId(mEquipmentInfo.getId());
+                abnormal.setNomenclature(mEquipmentInfo.getName());
+                abnormal.setMpi(mEquipmentInfo.getMpi());
+                abnormal.setPictBefore(inspectionDetail.getPhotoPath());
+                abnormal.setSynced(true);
+
+                params.put("abnormal_date", abnormal.getAbnormalDate());
+                params.put("abnormal_plant", abnormal.getPlant().getPlant());
+                params.put("abnormal_reported_by", abnormal.getReportedBy().getValue());
+                params.put("abnormal_equipment_id", String.valueOf(abnormal.getEquipmentId()));
+                params.put("abnormal_source", String.valueOf(abnormal.getSource().getValue()));
+                params.put("abnormal_priority", String.valueOf(abnormal.getPriority().getValue()));
+                params.put("abnormal_condition", String.valueOf(abnormal.getCondition().getValue()));
+                params.put("abnormal_action", String.valueOf(abnormal.getAction().getValue()));
+                params.put("abnormal_abnormal", abnormal.getAbnormal());
+                params.put("abnormal_activity", abnormal.getActivity());
+                params.put("abnormal_remark", abnormal.getRemark());
+                params.put("abnormal_pict_before", abnormal.getPictBefore());
+                params.put("abnormal_pict_after", abnormal.getPictAfter());
+            }
         }
 
         Timber.d("params" + LoggingHelper.getInstance().getJsonString(params));
@@ -894,23 +954,15 @@ public class AddInspectionPresenter extends BasePresenter<Contract.AddInspection
         });
     }
     public void setEquipmentCondition2(int condition, int[] index) {
-        Log.d("setEquipmentCondition: ","jalan");
         mEquipmentCondition = condition;
         this.index=index;
-        if (mEquipmentCondition == EQUIPMENT_CONDITION_BAD) {
-            if (mAbnormalityParamsModel == null)
-                getAbnormalityParams();
-//            Log.d("mAbnormalParams ",mAbnormalityParamsModel.getDefaultPsection());
+        if (mAbnormalityParamsModel == null)
+            getAbnormalityParams();
 
-            if (mAbnormalityParamsModel != null) {
-                Log.d("mAbnormalityParams ", String.valueOf(getView()));
-                if (getView() != null)
-                    getView().setupAbnormalityStep2(mAbnormalityParamsModel,index);
-            }
-
-        } else if (mEquipmentCondition == EQUIPMENT_CONDITION_GOOD) {
+        if (mAbnormalityParamsModel != null) {
+            Log.d("mAbnormalityParams ", String.valueOf(getView()));
             if (getView() != null)
-                getView().removeAbnormalityStep();
+                getView().setupAbnormalityStep2(mAbnormalityParamsModel,index);
         }
     }
     @Override

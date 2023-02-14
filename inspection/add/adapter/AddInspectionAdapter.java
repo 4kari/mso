@@ -5,12 +5,14 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.stepstone.stepper.Step;
 import com.stepstone.stepper.adapter.AbstractFragmentStepAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by durrrr on 11-Oct-17.
@@ -44,8 +46,18 @@ public class AddInspectionAdapter extends AbstractFragmentStepAdapter {
         mSteps.add(step);
         notifyDataSetChanged();
     }
-
+    public int findpos(Step step){
+        return mSteps.indexOf(step);
+    }
+    public void checkstep(){
+        Log.d("checkstep: ", mSteps.toString());
+    }
+    public void removeindex(int index){
+        mSteps.remove(index);
+    }
     public void removeStep(Step step) {
+        if(step!=null){
+            Log.d("removeStep: ",step.toString());}
         mSteps.remove(step);
         notifyDataSetChanged();
     }

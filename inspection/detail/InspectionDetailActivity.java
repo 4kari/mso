@@ -140,6 +140,7 @@ public class InspectionDetailActivity extends BaseActivity
 
         spCondition.setEnabled(false);
         etDescription.setFocusable(false);
+        etDescription.setVisibility(View.GONE);
 
         ibMenu.setOnClickListener(this);
         tabLayout.setupWithViewPager(viewPager);
@@ -299,7 +300,8 @@ public class InspectionDetailActivity extends BaseActivity
                         else if(detailInspectionModel.getEquipmentSubTypeId().equalsIgnoreCase(EquipmentInfo.TYPE_MCC_EXIST)) {
                             mTechnicalFragment = BearingMccFragment.newInstance(detailInspectionModel, (Bearing) technicalModel);
                             title = detailInspectionModel.getEquipmentSubTypeName();
-                        }else if(detailInspectionModel.getEquipmentSubTypeId().equalsIgnoreCase(EquipmentInfo.TYPE_MEKANIKAL)){
+                        }
+                        else if(detailInspectionModel.getEquipmentSubTypeId().equalsIgnoreCase(EquipmentInfo.TYPE_MEKANIKAL)){
                             mTechnicalFragment = BearingMekanikalFragment.newInstance(detailInspectionModel, (Bearing) technicalModel);
                             title = detailInspectionModel.getEquipmentSubTypeName();
                         }
@@ -333,9 +335,10 @@ public class InspectionDetailActivity extends BaseActivity
                          mViewPagerAdapter.addFragment(mTechnicalFragment2, StringUtils.capitalize(title2));
                     if(mTechnicalFragment3!=null)
                         mViewPagerAdapter.addFragment(mTechnicalFragment3, StringUtils.capitalize(title3));
-                     initPopupMenu(true);
+                    initPopupMenu(true);
                 }
             }
+
         } else {
             initPopupMenu(false);
         }
@@ -351,6 +354,7 @@ public class InspectionDetailActivity extends BaseActivity
             viewPager.setAdapter(mViewPagerAdapter);
             mViewPagerAdapter.notifyDataSetChanged();
         }
+
     }
 
     public void measureViewPager(Fragment fragment) {

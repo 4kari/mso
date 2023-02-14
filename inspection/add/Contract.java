@@ -31,6 +31,8 @@ public interface Contract {
         void onSetCondition(ArrayList<EditText> condPackage, int status);
 
         void removeAbnormalityStep();
+
+        void addAbis(Abnormal mAbnormalModel);
     }
 
     interface getMemberCallback{

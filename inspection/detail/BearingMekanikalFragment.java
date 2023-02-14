@@ -72,6 +72,8 @@ public class BearingMekanikalFragment extends TechnicalFragment {
     TextView txtCondition;
     @BindView(R.id.spCondition)
     Spinner spCondition;
+    @BindView(R.id.add_abis)
+    Button add_abis;
 
     public static BearingMekanikalFragment newInstance() {
         BearingMekanikalFragment instance = new BearingMekanikalFragment();
@@ -203,12 +205,12 @@ public class BearingMekanikalFragment extends TechnicalFragment {
         Houskeeping.setEnabled(false);
         UnsafeC.setEnabled(false);
         keterangan.setFocusable(false);
-
+        add_abis.setVisibility(View.GONE);
     }
 
     @Override
     void setDataToModel() {
-        bearing.setKeterangan(keterangan.getText().toString());
+        bearing.setKeteranganM(keterangan.getText().toString());
 
         if(!Kb_fan.getSelectedItem().toString().isEmpty())
             bearing.setKb_fan(Kb_fan.getSelectedItem().toString());

@@ -1,5 +1,7 @@
 package id.sisi.si.mso.ui.inspection.add;
 
+import static id.sisi.si.mso.R.layout.list_item_spinner;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,19 +38,20 @@ import id.sisi.si.mso.data.model.AbnormalityParams;
 import id.sisi.si.mso.data.model.ActionItem;
 import id.sisi.si.mso.data.model.ConditionItem;
 import id.sisi.si.mso.data.model.EquipmentInfo;
+import id.sisi.si.mso.data.model.Parent;
 import id.sisi.si.mso.data.model.PriorityItem;
 import id.sisi.si.mso.data.model.SourceItem;
+import id.sisi.si.mso.data.model.User;
 import id.sisi.si.mso.ui.base.BaseFragment;
 import id.sisi.si.mso.utils.DialogUtil;
+import io.realm.Realm;
 import timber.log.Timber;
-
-import static id.sisi.si.mso.R.layout.list_item_spinner;
 
 /**
  * Created by durrrr on 11-Oct-17.
  * Email: cab.purnama@gmail.com
  */
-public class AbnormalityFragment extends BaseFragment implements Step {
+public class AbnormalityFragmentM extends BaseFragment implements Step {
 
     private final String ABNORMAL_MODEL_KEY = "abnormal_model_key";
     private final String ABNORMALITY_PARAMS_KEY = "abnormality_params_model_key";
@@ -95,13 +98,14 @@ public class AbnormalityFragment extends BaseFragment implements Step {
     @BindView(R.id.saveabis)
     Button saveabis;
 
+    private Contract.ActivityCallback mActivityCallback;//added by rama untuk get activity
     private Abnormal mAbnormalModel;
     private AbnormalityParams mAbnormalityParams;
     private EquipmentInfo mEquipmentInfo;
     private int mChoosedCondition = 0;
 
-    public static AbnormalityFragment newInstance(AbnormalityParams abnormalityParams, EquipmentInfo equipmentInfo) {
-        AbnormalityFragment instance = new AbnormalityFragment();
+    public static AbnormalityFragmentM newInstance(AbnormalityParams abnormalityParams, EquipmentInfo equipmentInfo) {
+        AbnormalityFragmentM instance = new AbnormalityFragmentM();
         Bundle args = new Bundle();
         args.putParcelable(AbnormalityParams.TYPE_EXTRA, abnormalityParams);
         args.putParcelable(EquipmentInfo.TYPE_EXTRA, equipmentInfo);
@@ -109,8 +113,8 @@ public class AbnormalityFragment extends BaseFragment implements Step {
         return instance;
     }
     //added by rama 29 dec 2022
-    public static AbnormalityFragment newInstance(AbnormalityParams abnormalityParams, EquipmentInfo equipmentInfo, int index) {
-        AbnormalityFragment instance = new AbnormalityFragment();
+    public static AbnormalityFragmentM newInstance(AbnormalityParams abnormalityParams, EquipmentInfo equipmentInfo, int index) {
+        AbnormalityFragmentM instance = new AbnormalityFragmentM();
 //        Log.d("ABSnewInstance ", String.valueOf(index));
         Bundle args = new Bundle();
         args.putInt("index",index);
@@ -151,8 +155,9 @@ public class AbnormalityFragment extends BaseFragment implements Step {
             }
             if(getArguments().getInt("index") >= 0){
                 int index = getArguments().getInt("index");
-                String[] abs = {"Kb_fan","Vib_fan","KV_fan","Temp_ds_imp","Temp_nds_imp","Pulley","\n" +
-                        "SafetyG","Houskeeping","UnsafeC"};
+                String[] abs = {"Kelainan Bunyi Fan","Vibrasi Fan","Kondisi Visual Fan","Temperatur Bearing DS Impeller",
+                        "Temperatur Bearing NDS Impeller","Pulley & V-Belt", "Safety Guard","Houskeeping Machine & Area",
+                        "Unsafe Condition"};
                 identitas = index;
                 abinstxt.setText(abs[index]);
                 abinstxt.setVisibility(View.VISIBLE);
@@ -160,6 +165,7 @@ public class AbnormalityFragment extends BaseFragment implements Step {
             }else{
                 abinstxt.setVisibility(View.INVISIBLE);
             }
+            mActivityCallback = (Contract.ActivityCallback) getActivity();//added by rama untuk get activity
             initView();
         }
 
@@ -178,6 +184,7 @@ public class AbnormalityFragment extends BaseFragment implements Step {
         matActivity.setAdapter(activityAdapter);
         matActivity.setThreshold(1);
         matActivity.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        matActivity.setText("A250 - INSPECTION / CHECKING (PERIKSA), "); // added by rama 01 Feb 2023
 
         etPlant.setFocusable(false);
         etPlant.setText(mEquipmentInfo.getPlant().getPlant() + " - " +mEquipmentInfo.getPlant().getName());
@@ -185,16 +192,16 @@ public class AbnormalityFragment extends BaseFragment implements Step {
         ArrayAdapter<SourceItem> sourceAdapter = new ArrayAdapter<>(getContext(), R.layout.list_item_spinner,
                 android.R.id.text1, mAbnormalityParams.getSources());
         spSource.setAdapter(sourceAdapter);
+        spSource.setSelection(1); // added by rama 01 Feb 2023
 
         final ArrayAdapter<ConditionItem> conditionAdapter = new ArrayAdapter<>(getContext(), R.layout.list_item_spinner,
                 android.R.id.text1, mAbnormalityParams.getConditions());
         spCondition.setAdapter(conditionAdapter);
-        spCondition.setSelection(mChoosedCondition);
-
+//        spCondition.setSelection(mChoosedCondition);
         ArrayAdapter<PriorityItem> priorityAdapter = new ArrayAdapter<>(getContext(), R.layout.list_item_spinner,
                 android.R.id.text1, mAbnormalityParams.getPriorities());
         spPriority.setAdapter(priorityAdapter);
-
+        spPriority.setSelection(3);// added by rama 01 Feb 2023
         spPriority.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -208,9 +215,12 @@ public class AbnormalityFragment extends BaseFragment implements Step {
                 ArrayAdapter<ConditionItem> conditionAdapter = new ArrayAdapter<>(getContext(),
                         list_item_spinner, android.R.id.text1, conditionItems);
                 spCondition.setAdapter(conditionAdapter);
-                mChoosedCondition = i;
-                spCondition.setSelection(mChoosedCondition);
+                if(!spPriority.getSelectedItem().toString().equalsIgnoreCase("Emergency")){spCondition.setSelection(2);}
+                else{
+                    mChoosedCondition = i;
+                    spCondition.setSelection(mChoosedCondition);
 
+                }
                 /*if (mActionType == ACTION_EDIT && ON_FIRST_BIND_CONDITION) {
                     spCondition.setSelection(conditionItems.indexOf(mAbnormal.getCondition()));
                     ON_FIRST_BIND_CONDITION = false;
@@ -222,14 +232,27 @@ public class AbnormalityFragment extends BaseFragment implements Step {
 
             }
         });
-        abinstxt.setVisibility(View.GONE);
-        saveabis.setVisibility(View.GONE);
+        //added by rama untuk save tiap abnormalitas
+        saveabis.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //tempat edit rama
+                mAbnormalModel = setDataToModel();
+                Log.d("onclickfrag", String.valueOf(abinstxt.getText()));
+
+                mActivityCallback.addAbis(mAbnormalModel);
+                saveabis.setEnabled(false);
+                saveabis.setText("Saved");
+            }
+        });
         ArrayAdapter<ActionItem> actionAdapter = new ArrayAdapter<>(getContext(), R.layout.list_item_spinner,
                 android.R.id.text1, mAbnormalityParams.getActions());
         spAction.setAdapter(actionAdapter);
+        spAction.setSelection(1);// added by rama 01 Feb 2023
     }
 
     public void setupAbnormalityImage(@Nullable String imagePath, @Nullable String imageUrl) {
+        Log.d("setupAbnormalityImage",String.valueOf(abinstxt.getText()));
         if(mAbnormalModel == null) {
             mAbnormalModel = new Abnormal();
             mAbnormalModel.setSynced(false);
@@ -260,14 +283,17 @@ public class AbnormalityFragment extends BaseFragment implements Step {
             mAbnormalModel = new Abnormal();
             mAbnormalModel.setSynced(false);
         }
-
+        String Abnormals = matAbnormal.getText().toString();
+        Abnormals = Abnormals.substring(0,Abnormals.length()-2)+";";
+        String Activities = matActivity.getText().toString();
+        Activities = Activities.substring(0,Activities.length()-2)+";";
         mAbnormalModel.setPlant(mEquipmentInfo.getPlant());
         mAbnormalModel.setSource((SourceItem) spSource.getSelectedItem());
         mAbnormalModel.setPriority((PriorityItem) spPriority.getSelectedItem());
         mAbnormalModel.setCondition((ConditionItem) spCondition.getSelectedItem());
         mAbnormalModel.setAction((ActionItem) spAction.getSelectedItem());
-        mAbnormalModel.setAbnormal(matAbnormal.getText().toString());
-        mAbnormalModel.setActivity(matActivity.getText().toString());
+        mAbnormalModel.setAbnormal(Abnormals);
+        mAbnormalModel.setActivity(Activities);
         mAbnormalModel.setRemark(etRemark.getText().toString());
 //        mAbnormalModel.setPictBefore(pictBeforeValue);
         mAbnormalModel.setPictAfter("");

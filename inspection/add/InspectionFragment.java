@@ -100,6 +100,8 @@ public class InspectionFragment extends BaseFragment
     Spinner spCondition;
     @BindView(R.id.eddescription)
     EditText edDescription;
+    @BindView(R.id.txteddescription)
+    TextView txteddescription;
     /*@BindView(R.id.lladdview)
     LinearLayout llAddView;*/
     @BindView(R.id.sp_activity)
@@ -210,6 +212,9 @@ public class InspectionFragment extends BaseFragment
         spActivity.setAdapter(activityAdapter);
         spActivity.setSelection(1);
 
+        edDescription.setText("-");
+        edDescription.setVisibility(View.GONE);
+        txteddescription.setVisibility(View.GONE);
         /*if (activityViewList == null)
             activityViewList = new ArrayList<>();
 

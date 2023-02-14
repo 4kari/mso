@@ -449,16 +449,16 @@ public class InspectionDetailPresenter extends BasePresenter<Contract.View> impl
                 }
                 else if(mDetailInspectionModel.getEquipmentSubTypeId().equalsIgnoreCase(EquipmentInfo.TYPE_MEKANIKAL)){
                     RealmList<Param> mEquipmentInfoSubMekanik = mEquipmentInfoModel.getParams().get(4).getParams();
-                    params.put(mEquipmentInfoSubMekanik.get(0).getId(), String.valueOf(bearingModel.getTemp_ds_imp()));
-                    params.put(mEquipmentInfoSubMekanik.get(1).getId(), String.valueOf(bearingModel.getTemp_nds_imp()));
-                    params.put(mEquipmentInfoSubMekanik.get(2).getId(), String.valueOf(bearingModel.getKb_fan()));
-                    params.put(mEquipmentInfoSubMekanik.get(3).getId(), String.valueOf(bearingModel.getVib_fan()));
-                    params.put(mEquipmentInfoSubMekanik.get(4).getId(), String.valueOf(bearingModel.getKV_fan()));
+                    params.put(mEquipmentInfoSubMekanik.get(0).getId(), String.valueOf(bearingModel.getKb_fan()));
+                    params.put(mEquipmentInfoSubMekanik.get(1).getId(), String.valueOf(bearingModel.getVib_fan()));
+                    params.put(mEquipmentInfoSubMekanik.get(2).getId(), String.valueOf(bearingModel.getKV_fan()));
+                    params.put(mEquipmentInfoSubMekanik.get(3).getId(), String.valueOf(bearingModel.getTemp_ds_imp()));
+                    params.put(mEquipmentInfoSubMekanik.get(4).getId(), String.valueOf(bearingModel.getTemp_nds_imp()));
                     params.put(mEquipmentInfoSubMekanik.get(5).getId(), String.valueOf(bearingModel.getPulley()));
                     params.put(mEquipmentInfoSubMekanik.get(6).getId(), String.valueOf(bearingModel.getSafetyG()));
                     params.put(mEquipmentInfoSubMekanik.get(7).getId(), String.valueOf(bearingModel.getHouskeeping()));
                     params.put(mEquipmentInfoSubMekanik.get(8).getId(), String.valueOf(bearingModel.getUnsafeC()));
-                    params.put(mEquipmentInfoSubMekanik.get(9).getId(), bearingModel.getKeterangan());
+                    params.put(mEquipmentInfoSubMekanik.get(9).getId(), bearingModel.getKeteranganM());
                 }
                 else {
                     RealmList<Param> mEquipmentInfoSubMMV = mEquipmentInfoModel.getParams().get(2).getParams();

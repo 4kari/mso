@@ -1,5 +1,7 @@
 package id.sisi.si.mso.ui.inspection.add;
 
+import static id.sisi.si.mso.R.layout.list_item_spinner;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,13 +44,11 @@ import id.sisi.si.mso.ui.base.BaseFragment;
 import id.sisi.si.mso.utils.DialogUtil;
 import timber.log.Timber;
 
-import static id.sisi.si.mso.R.layout.list_item_spinner;
-
 /**
  * Created by durrrr on 11-Oct-17.
  * Email: cab.purnama@gmail.com
  */
-public class AbnormalityFragment extends BaseFragment implements Step {
+public class AbnormalityFragment1 extends BaseFragment implements Step {
 
     private final String ABNORMAL_MODEL_KEY = "abnormal_model_key";
     private final String ABNORMALITY_PARAMS_KEY = "abnormality_params_model_key";
@@ -100,8 +100,8 @@ public class AbnormalityFragment extends BaseFragment implements Step {
     private EquipmentInfo mEquipmentInfo;
     private int mChoosedCondition = 0;
 
-    public static AbnormalityFragment newInstance(AbnormalityParams abnormalityParams, EquipmentInfo equipmentInfo) {
-        AbnormalityFragment instance = new AbnormalityFragment();
+    public static AbnormalityFragment1 newInstance(AbnormalityParams abnormalityParams, EquipmentInfo equipmentInfo) {
+        AbnormalityFragment1 instance = new AbnormalityFragment1();
         Bundle args = new Bundle();
         args.putParcelable(AbnormalityParams.TYPE_EXTRA, abnormalityParams);
         args.putParcelable(EquipmentInfo.TYPE_EXTRA, equipmentInfo);
@@ -109,8 +109,8 @@ public class AbnormalityFragment extends BaseFragment implements Step {
         return instance;
     }
     //added by rama 29 dec 2022
-    public static AbnormalityFragment newInstance(AbnormalityParams abnormalityParams, EquipmentInfo equipmentInfo, int index) {
-        AbnormalityFragment instance = new AbnormalityFragment();
+    public static AbnormalityFragment1 newInstance(AbnormalityParams abnormalityParams, EquipmentInfo equipmentInfo, int index) {
+        AbnormalityFragment1 instance = new AbnormalityFragment1();
 //        Log.d("ABSnewInstance ", String.valueOf(index));
         Bundle args = new Bundle();
         args.putInt("index",index);
@@ -222,8 +222,12 @@ public class AbnormalityFragment extends BaseFragment implements Step {
 
             }
         });
-        abinstxt.setVisibility(View.GONE);
-        saveabis.setVisibility(View.GONE);
+        saveabis.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         ArrayAdapter<ActionItem> actionAdapter = new ArrayAdapter<>(getContext(), R.layout.list_item_spinner,
                 android.R.id.text1, mAbnormalityParams.getActions());
         spAction.setAdapter(actionAdapter);
